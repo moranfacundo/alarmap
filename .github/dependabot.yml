@@ -1,12 +1,26 @@
 version: 2
 updates:
-  # Dependencias de la app. Expo fija versiones compatibles: revisar con `npx expo install --check`
-  # antes de aceptar subidas de expo-* o react-native.
   - package-ecosystem: npm
     directory: /
     schedule:
       interval: weekly
     open-pull-requests-limit: 5
+    ignore:
+      # Versiones fijadas por Expo SDK: se suben todas juntas al actualizar el SDK
+      # (`npx expo install expo@latest` y luego `npx expo install --fix`), no una por una.
+      - dependency-name: expo
+      - dependency-name: expo-*
+      - dependency-name: react
+      - dependency-name: react-dom
+      - dependency-name: "@types/react"
+      - dependency-name: react-native
+      - dependency-name: react-native-*
+      # Saltos mayores que la cadena de compilación aún no soporta.
+      # El CI no compila con Metro, así que un PR verde no demuestra compatibilidad.
+      - dependency-name: typescript # el compilador de Angular exige >=6.0 <6.1
+        update-types: ["version-update:semver-major"]
+      - dependency-name: "@babel/core" # Metro y los presets de Expo usan Babel 7
+        update-types: ["version-update:semver-major"]
   - package-ecosystem: github-actions
     directory: /
     schedule:
