@@ -361,9 +361,6 @@ export class AlarmEditorPage implements OnInit {
   protected readonly tags = signal<readonly string[]>([]);
   protected readonly tagInput = signal('');
 
-  /** Foto del formulario al abrirlo (JSON del borrador), para detectar cambios sin guardar. */
-  private readonly initialSnapshot = signal('');
-
   protected readonly errors = signal<string[]>([]);
   protected readonly saving = signal(false);
 
@@ -452,6 +449,16 @@ export class AlarmEditorPage implements OnInit {
     this.errors.set([]);
     this.step.set('form');
     this.markClean();
+  }
+
+  /** Convierte el texto del campo en un token (badge) y limpia el campo. */
+  protected commitTag(): void {
+    this.tags.update((list) => addTag(list, this.tagInput()));
+    this.tagInput.set('');
+  }
+
+  protected removeTag(tag: string): void {
+    this.tags.update((list) => list.filter((t) => t !== tag));
   }
 
   /** Convierte el texto del campo en un token (badge) y limpia el campo. */

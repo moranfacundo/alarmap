@@ -38,9 +38,8 @@ import { Pressable, Text, View } from '@ng-native/components';
       font-weight: 500;
     }
     .remove {
-      min-width: 40px;
-      min-height: 40px;
-      margin: -6px -10px -6px 0;
+      min-width: 24px;
+      min-height: 28px;
       align-items: center;
       justify-content: center;
     }
