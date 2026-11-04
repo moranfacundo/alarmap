@@ -1,0 +1,14 @@
+name: Funcionalidad
+description: Propone una mejora o algo nuevo
+labels: [enhancement]
+body:
+  - type: textarea
+    id: propuesta
+    attributes:
+      label: ¿Qué te gustaría que hiciera Alarmap?
+    validations:
+      required: true
+  - type: textarea
+    id: motivo
+    attributes:
+      label: ¿Qué problema resuelve?

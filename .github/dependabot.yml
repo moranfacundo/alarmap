@@ -1,0 +1,13 @@
+version: 2
+updates:
+  # Dependencias de la app. Expo fija versiones compatibles: revisar con `npx expo install --check`
+  # antes de aceptar subidas de expo-* o react-native.
+  - package-ecosystem: npm
+    directory: /
+    schedule:
+      interval: weekly
+    open-pull-requests-limit: 5
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
