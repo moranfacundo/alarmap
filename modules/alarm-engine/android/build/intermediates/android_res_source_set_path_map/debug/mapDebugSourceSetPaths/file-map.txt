@@ -1,0 +1,9 @@
+expo.modules.alarmengine.alarm-engine-pngs-0 /run/media/morandev/repository/android-ui/android-alarm-app/modules/alarm-engine/android/build/generated/res/pngs/debug
+expo.modules.alarmengine.alarm-engine-updated_navigation_xml-1 /run/media/morandev/repository/android-ui/android-alarm-app/modules/alarm-engine/android/build/generated/updated_navigation_xml/debug
+expo.modules.alarmengine.alarm-engine-mergeDebugResources-2 /run/media/morandev/repository/android-ui/android-alarm-app/modules/alarm-engine/android/build/intermediates/incremental/debug/mergeDebugResources/merged.dir
+expo.modules.alarmengine.alarm-engine-mergeDebugResources-3 /run/media/morandev/repository/android-ui/android-alarm-app/modules/alarm-engine/android/build/intermediates/incremental/debug/mergeDebugResources/stripped.dir
+expo.modules.alarmengine.alarm-engine-debug-4 /run/media/morandev/repository/android-ui/android-alarm-app/modules/alarm-engine/android/build/intermediates/merged_res/debug/mergeDebugResources
+expo.modules.alarmengine.alarm-engine-debug-5 /run/media/morandev/repository/android-ui/android-alarm-app/modules/alarm-engine/android/build/intermediates/packaged_res/debug/packageDebugResources
+expo.modules.alarmengine.alarm-engine-debug-6 /run/media/morandev/repository/android-ui/android-alarm-app/modules/alarm-engine/android/src/debug/res
+expo.modules.alarmengine.alarm-engine-main-7 /run/media/morandev/repository/android-ui/android-alarm-app/modules/alarm-engine/android/src/main/res
+gradleHome-0 /home/morandev/.gradle
