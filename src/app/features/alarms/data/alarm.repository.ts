@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { appDb } from '../../../core/database/app-database.ts';
 import {
   type Alarm,
+  type AlarmCategory,
   type AlarmType,
   maskToWeekdays,
   weekdaysToMask,
@@ -19,8 +20,21 @@ interface AlarmRow {
   weekdays: number | null;
   day_of_month: number | null;
   tone_id: string;
+  category: AlarmCategory;
+  /** Arreglo JSON de strings. */
+  tags: string;
   created_at: number;
   updated_at: number;
+}
+
+/** Lee los tokens guardados; ante JSON corrupto o de forma inesperada devuelve vacío. */
+function parseTags(raw: string): string[] {
+  try {
+    const value: unknown = JSON.parse(raw);
+    return Array.isArray(value) ? value.filter((t): t is string => typeof t === 'string') : [];
+  } catch {
+    return [];
+  }
 }
 
 function fromRow(row: AlarmRow): Alarm {
@@ -35,6 +49,8 @@ function fromRow(row: AlarmRow): Alarm {
     weekdays: row.weekdays === null ? [] : maskToWeekdays(row.weekdays),
     dayOfMonth: row.day_of_month,
     toneId: row.tone_id,
+    category: row.category,
+    tags: parseTags(row.tags),
     createdAt: row.created_at,
     updatedAt: row.updated_at,
   };
@@ -54,8 +70,8 @@ export class AlarmRepository {
     const db = await appDb.ready();
     await db.runAsync(
       `INSERT OR REPLACE INTO alarm
-        (id, label, enabled, type, hour, minute, date, weekdays, day_of_month, tone_id, created_at, updated_at)
-       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+        (id, label, enabled, type, hour, minute, date, weekdays, day_of_month, tone_id, category, tags, created_at, updated_at)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
       [
         alarm.id,
         alarm.label,
@@ -67,6 +83,8 @@ export class AlarmRepository {
         alarm.type === 'weekly' ? weekdaysToMask(alarm.weekdays) : null,
         alarm.dayOfMonth,
         alarm.toneId,
+        alarm.category,
+        JSON.stringify(alarm.category === 'routine' ? alarm.tags : []),
         alarm.createdAt,
         alarm.updatedAt,
       ],

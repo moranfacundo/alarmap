@@ -3,12 +3,18 @@ import { Pressable, Switch, Text, View } from '@ng-native/components';
 import type { TimeFormat } from '../../settings/domain/settings.model.ts';
 import type { Alarm } from '../domain/alarm.model.ts';
 import { ThemeService } from '../../../shared/theme/theme.service.ts';
-import { ALARM_TYPE_LABEL, describeRepeat, formatTime } from '../../../shared/utils/time-format.ts';
+import { TagBadge } from '../../../shared/components/tag-badge.ts';
+import {
+  ALARM_TYPE_LABEL,
+  ROUTINE_LABEL,
+  describeRepeat,
+  formatTime,
+} from '../../../shared/utils/time-format.ts';
 
 /** Tarjeta de una alarma en la lista: hora, etiqueta, repetición, tipo y switch de activación. */
 @Component({
   selector: 'app-alarm-card',
-  imports: [Pressable, Switch, Text, View],
+  imports: [Pressable, Switch, TagBadge, Text, View],
   template: `
     <view class="card">
       <!-- La zona de edición y el switch son hermanos: si el switch estuviera dentro del pressable,
@@ -23,6 +29,13 @@ import { ALARM_TYPE_LABEL, describeRepeat, formatTime } from '../../../shared/ut
         <text class="time">{{ time() }}</text>
         @if (alarm().label) {
           <text class="label" [numberOfLines]="1">{{ alarm().label }}</text>
+        }
+        @if (alarm().tags.length > 0) {
+          <view class="tags">
+            @for (tag of alarm().tags; track tag) {
+              <app-tag-badge [label]="tag" />
+            }
+          </view>
         }
         <text class="meta">{{ typeLabel() }} · {{ repeat() }}</text>
       </pressable>
@@ -62,6 +75,12 @@ import { ALARM_TYPE_LABEL, describeRepeat, formatTime } from '../../../shared/ut
       font-size: 16px;
       font-weight: 500;
     }
+    .tags {
+      flex-direction: row;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin: 4px 0;
+    }
     .meta {
       font-size: 13px;
       color: var(--text-muted);
@@ -81,11 +100,14 @@ export class AlarmCard {
   protected readonly time = computed(() =>
     formatTime(this.alarm().hour, this.alarm().minute, this.timeFormat()),
   );
-  protected readonly typeLabel = computed(() => ALARM_TYPE_LABEL[this.alarm().type]);
+  protected readonly typeLabel = computed(() =>
+    this.alarm().category === 'routine' ? ROUTINE_LABEL : ALARM_TYPE_LABEL[this.alarm().type],
+  );
   protected readonly repeat = computed(() => describeRepeat(this.alarm()));
   /** Texto leído por lectores de pantalla. */
   protected readonly summary = computed(() => {
     const a = this.alarm();
-    return `${this.time()}, ${a.label || 'sin etiqueta'}, ${this.typeLabel()}, ${this.repeat()}, ${a.enabled ? 'activada' : 'desactivada'}`;
+    const tags = a.tags.length > 0 ? `${a.tags.join(', ')}, ` : '';
+    return `${this.time()}, ${a.label || 'sin etiqueta'}, ${tags}${this.typeLabel()}, ${this.repeat()}, ${a.enabled ? 'activada' : 'desactivada'}`;
   });
 }

@@ -12,12 +12,21 @@ import {
 import { NativeNavigation } from '@ng-native/router';
 import { TopBar } from '../../../shared/components/top-bar.ts';
 import { ThemeService } from '../../../shared/theme/theme.service.ts';
-import { ALARM_TYPE_LABEL } from '../../../shared/utils/time-format.ts';
+import { TagBadge } from '../../../shared/components/tag-badge.ts';
+import { ALARM_TYPE_LABEL, ROUTINE_LABEL } from '../../../shared/utils/time-format.ts';
 import { SettingsStore } from '../../settings/application/settings.store.ts';
 import { TonePicker } from '../../settings/presentation/tone-picker.ts';
 import { AlarmStore } from '../application/alarm.store.ts';
 import { validateDraft } from '../domain/alarm-validation.ts';
-import type { AlarmDraft, AlarmType, Weekday } from '../domain/alarm.model.ts';
+import {
+  ALL_WEEKDAYS,
+  MAX_TAG_LENGTH,
+  addTag,
+  type AlarmCategory,
+  type AlarmDraft,
+  type AlarmType,
+  type Weekday,
+} from '../domain/alarm.model.ts';
 import { toDateKey } from '../domain/recurrence.ts';
 import { CalendarPicker } from './calendar-picker.ts';
 import { MonthDayGrid } from './month-day-grid.ts';
@@ -30,6 +39,11 @@ const TYPE_HELP: Record<AlarmType, string> = {
   weekly: 'Se repite los días de la semana que elijas.',
   monthly: 'Se repite un día fijo de cada mes.',
 };
+
+/** Opción del paso 1: los tres tipos de recurrencia más la categoría de medicación/rutina. */
+type TypeChoice = AlarmType | 'routine';
+
+const ROUTINE_HELP = 'Recordatorio diario o ciertos días para medicación o rutina.';
 
 /**
  * Creación y edición de alarmas en pantalla completa.
@@ -45,6 +59,7 @@ const TYPE_HELP: Record<AlarmType, string> = {
     SafeAreaView,
     ScrollView,
     Text,
+    TagBadge,
     TextInput,
     TimeDial,
     TonePicker,
@@ -59,15 +74,15 @@ const TYPE_HELP: Record<AlarmType, string> = {
       @if (step() === 'type') {
         <view class="types">
           <text class="step-hint">¿Qué tipo de alarma quieres crear?</text>
-          @for (t of types; track t) {
+          @for (o of options; track o.key) {
             <pressable
               class="type-card"
               accessibilityRole="button"
-              [accessibilityLabel]="typeLabels[t] + '. ' + typeHelp[t]"
-              (press)="chooseType(t)"
+              [accessibilityLabel]="o.label + '. ' + o.help"
+              (press)="chooseType(o.key)"
             >
-              <text class="type-title">{{ typeLabels[t] }}</text>
-              <text class="type-help">{{ typeHelp[t] }}</text>
+              <text class="type-title">{{ o.label }}</text>
+              <text class="type-help">{{ o.help }}</text>
             </pressable>
           }
         </view>
@@ -82,8 +97,40 @@ const TYPE_HELP: Record<AlarmType, string> = {
                 [format]="settings.settings().timeFormat"
               />
 
+              @if (category() === 'routine') {
+                <view class="field">
+                  <text class="field-title">Medicamentos / tareas</text>
+                  <view class="tag-entry">
+                    <text-input
+                      class="input tag-input"
+                      placeholder="Ej. x1 Paracetamol"
+                      returnKeyType="done"
+                      [placeholderTextColor]="theme.colors().textMuted"
+                      [maxLength]="maxTagLength"
+                      [(value)]="tagInput"
+                      (submitEditing)="commitTag()"
+                    />
+                    <pressable
+                      class="add"
+                      accessibilityRole="button"
+                      accessibilityLabel="Agregar"
+                      (press)="commitTag()"
+                    >
+                      <text class="add-text">Agregar</text>
+                    </pressable>
+                  </view>
+                  @if (tags().length > 0) {
+                    <view class="tags">
+                      @for (tag of tags(); track tag) {
+                        <app-tag-badge [label]="tag" [removable]="true" (remove)="removeTag(tag)" />
+                      }
+                    </view>
+                  }
+                </view>
+              }
+
               <view class="field">
-                <text class="field-title">Etiqueta</text>
+                <text class="field-title">{{ category() === 'routine' ? 'Nombre' : 'Etiqueta' }}</text>
                 <text-input
                   class="input"
                   placeholder="Descripción (opcional)"
@@ -207,6 +254,32 @@ const TYPE_HELP: Record<AlarmType, string> = {
       font-family: Inter;
       font-size: 16px;
     }
+    .tag-entry {
+      flex-direction: row;
+      gap: 8px;
+      align-items: center;
+    }
+    .tag-input {
+      flex: 1;
+    }
+    .add {
+      min-height: 48px;
+      padding: 0 16px;
+      align-items: center;
+      justify-content: center;
+      border-radius: 24px;
+      background-color: var(--accent);
+    }
+    .add-text {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--on-accent);
+    }
+    .tags {
+      flex-direction: row;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
     .note {
       font-size: 13px;
       color: var(--text-muted);
@@ -254,9 +327,15 @@ export class AlarmEditorPage implements OnInit {
   private readonly nav = inject(NativeNavigation);
   private readonly dialogs = inject(Dialogs);
 
-  protected readonly types: readonly AlarmType[] = ['once', 'weekly', 'monthly'];
-  protected readonly typeLabels = ALARM_TYPE_LABEL;
-  protected readonly typeHelp = TYPE_HELP;
+  protected readonly options: readonly { key: TypeChoice; label: string; help: string }[] = [
+    ...(['once', 'weekly', 'monthly'] as const).map((t) => ({
+      key: t,
+      label: ALARM_TYPE_LABEL[t],
+      help: TYPE_HELP[t],
+    })),
+    { key: 'routine', label: ROUTINE_LABEL, help: ROUTINE_HELP },
+  ];
+  protected readonly maxTagLength = MAX_TAG_LENGTH;
 
   /** Paso actual: 1 = elegir tipo, 2 = formulario. */
   protected readonly step = signal<'type' | 'form'>('type');
@@ -271,13 +350,17 @@ export class AlarmEditorPage implements OnInit {
   protected readonly weekdays = signal<readonly Weekday[]>([]);
   protected readonly dayOfMonth = signal<number | null>(null);
   protected readonly toneId = signal('default');
+  protected readonly category = signal<AlarmCategory>('standard');
+  protected readonly tags = signal<readonly string[]>([]);
+  protected readonly tagInput = signal('');
 
   protected readonly errors = signal<string[]>([]);
   protected readonly saving = signal(false);
 
   protected readonly title = computed(() => {
     if (this.isEditing()) return 'Editar alarma';
-    return this.step() === 'type' ? 'Nueva alarma' : `Alarma · ${ALARM_TYPE_LABEL[this.type()]}`;
+    if (this.step() === 'type') return 'Nueva alarma';
+    return `Alarma · ${this.category() === 'routine' ? ROUTINE_LABEL : ALARM_TYPE_LABEL[this.type()]}`;
   });
 
   /** Datos del formulario, normalizados: solo se guarda el campo que corresponde al tipo. */
@@ -293,6 +376,8 @@ export class AlarmEditorPage implements OnInit {
       weekdays: type === 'weekly' ? this.weekdays() : [],
       dayOfMonth: type === 'monthly' ? this.dayOfMonth() : null,
       toneId: this.toneId(),
+      category: this.category(),
+      tags: this.category() === 'routine' ? this.tags() : [],
     };
   });
 
@@ -315,6 +400,8 @@ export class AlarmEditorPage implements OnInit {
     this.weekdays.set(alarm.weekdays);
     this.dayOfMonth.set(alarm.dayOfMonth);
     this.toneId.set(alarm.toneId);
+    this.category.set(alarm.category);
+    this.tags.set(alarm.tags);
     this.step.set('form');
   }
 
@@ -329,10 +416,27 @@ export class AlarmEditorPage implements OnInit {
     this.toneId.set(this.settings.settings().defaultToneId);
   }
 
-  protected chooseType(type: AlarmType): void {
-    this.type.set(type);
+  protected chooseType(choice: TypeChoice): void {
+    if (choice === 'routine') {
+      this.category.set('routine');
+      this.type.set('weekly');
+      this.weekdays.set(ALL_WEEKDAYS); // lo habitual: todos los días; el usuario puede quitar
+    } else {
+      this.category.set('standard');
+      this.type.set(choice);
+    }
     this.errors.set([]);
     this.step.set('form');
+  }
+
+  /** Convierte el texto del campo en un token (badge) y limpia el campo. */
+  protected commitTag(): void {
+    this.tags.update((list) => addTag(list, this.tagInput()));
+    this.tagInput.set('');
+  }
+
+  protected removeTag(tag: string): void {
+    this.tags.update((list) => list.filter((t) => t !== tag));
   }
 
   /** Volver: del formulario al paso de tipo (si es nueva) o salir de la pantalla. */
@@ -345,6 +449,7 @@ export class AlarmEditorPage implements OnInit {
   }
 
   protected async save(): Promise<void> {
+    if (this.category() === 'routine' && this.tagInput().trim()) this.commitTag(); // texto pendiente sin "Agregar"
     const errors = validateDraft(this.draft());
     this.errors.set(errors);
     if (errors.length > 0) return;

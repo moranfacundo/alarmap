@@ -25,3 +25,4 @@
 | 21 | Nombre del autor | Se escribió "Facundo Morán" (el pedido decía "Moràn"); confirmar ortografía en `core/config/app-info.ts`. |
 | 22 | Confirmar al descartar cambios | El editor no avisa al salir con cambios sin guardar. |
 | 23 | Editar una alarma desactivada | Al guardar, la alarma queda activa. Confirmar si es lo deseado. |
+| 24 | Categoría medicación/rutina | Tokens libres (JSON en `alarm.tags`), se programa como `weekly`. Sin dosis estructurada ni registro de tomas. Pendiente: mostrar tokens en la pantalla de alarma sonando (requiere contrato nativo). |
