@@ -6,7 +6,8 @@ export interface Tone {
 
 /**
  * Catálogo de tonos locales.
- * PROVISIONAL: los archivos de audio definitivos aún no existen (assets/sounds/, OPEN_DECISIONS #7).
+ * Los audios viven en el módulo nativo (modules/alarm-engine/.../res/raw/tone_<id>.wav, generados con
+ * scripts/generate-tones.py). Mantener los ids sincronizados con AlarmTones.kt.
  * No se permite importar ni descargar tonos.
  */
 export const TONES: readonly Tone[] = [

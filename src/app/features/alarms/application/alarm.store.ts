@@ -1,4 +1,5 @@
-import { Injectable, computed, inject, signal } from '@angular/core';
+import { DestroyRef, Injectable, computed, inject, signal } from '@angular/core';
+import { AlarmEngineService } from '../../../core/native/alarm-engine.service.ts';
 import { AlarmRepository } from '../data/alarm.repository.ts';
 import { sortAlarms } from '../domain/alarm-sort.ts';
 import type { Alarm, AlarmDraft } from '../domain/alarm.model.ts';
@@ -6,11 +7,13 @@ import { newId } from '../../../shared/utils/id.ts';
 
 /**
  * Estado de las alarmas para la UI (signals). Persiste en SQLite a través del repositorio.
- * Aquí NO se programa nada en el sistema: eso será responsabilidad del módulo nativo (Kotlin).
+ * La programación en el sistema (AlarmManager) es del motor nativo (Kotlin): tras cada cambio se le
+ * pide recalcular esa alarma; el motor lee SQLite por su cuenta.
  */
 @Injectable({ providedIn: 'root' })
 export class AlarmStore {
   private readonly repo = inject(AlarmRepository);
+  private readonly engine = inject(AlarmEngineService);
   private readonly items = signal<readonly Alarm[]>([]);
 
   /** Alarmas ordenadas por hora (independiente de si están activas). */
@@ -19,8 +22,16 @@ export class AlarmStore {
   /** Mensaje de error de la última operación fallida, o `null`. */
   readonly error = signal<string | null>(null);
 
+  constructor() {
+    // El motor desactiva por su cuenta las alarmas "una vez" que ya sonaron: se recarga la lista.
+    const sub = this.engine.onAlarmsChanged(() => void this.load());
+    inject(DestroyRef).onDestroy(() => sub?.remove());
+  }
+
   async load(): Promise<void> {
     try {
+      // Primero el motor (puede desactivar alarmas "una vez" vencidas) y luego la lectura.
+      await this.engine.rescheduleAll().catch((e: unknown) => this.engineFailed(e));
       this.items.set(await this.repo.list());
       this.error.set(null);
     } catch (e) {
@@ -46,6 +57,7 @@ export class AlarmStore {
     };
     await this.repo.upsert(alarm);
     this.items.update((list) => [...list.filter((a) => a.id !== alarm.id), alarm]);
+    await this.sync(alarm.id);
     return alarm;
   }
 
@@ -55,10 +67,25 @@ export class AlarmStore {
     this.items.update((list) =>
       list.map((a) => (a.id === id ? { ...a, enabled, updatedAt: now } : a)),
     );
+    await this.sync(id);
   }
 
   async remove(id: string): Promise<void> {
     await this.repo.remove(id);
     this.items.update((list) => list.filter((a) => a.id !== id));
+    await this.sync(id);
+  }
+
+  /** Pide al motor reprogramar la alarma. Si falla, la alarma queda guardada pero se avisa. */
+  private async sync(id: string): Promise<void> {
+    try {
+      await this.engine.reschedule(id);
+    } catch (e) {
+      this.engineFailed(e);
+    }
+  }
+
+  private engineFailed(e: unknown): void {
+    this.error.set(`No se pudo programar la alarma en el sistema: ${String(e)}`);
   }
 }

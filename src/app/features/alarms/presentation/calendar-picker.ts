@@ -1,13 +1,15 @@
 import { Component, OnInit, computed, input, model, signal } from '@angular/core';
 import { Pressable, Text, View } from '@ng-native/components';
 import { daysInMonth, toDateKey, weekdayOf } from '../domain/recurrence.ts';
-import { MONTH_NAMES, WEEKDAY_INITIAL } from '../../../shared/utils/time-format.ts';
+import { MONTH_NAMES, WEEKDAY_INITIAL, WEEKDAY_LONG } from '../../../shared/utils/time-format.ts';
 
 /** Celda del calendario: un día del mes o un hueco (`day = 0`). */
 interface Cell {
   readonly key: string;
   readonly day: number;
   readonly dateKey: string;
+  /** Fecha hablada para TalkBack (ej. "miércoles 4 de noviembre"), en vez de `2026-11-04`. */
+  readonly spoken: string;
   readonly disabled: boolean;
   readonly selected: boolean;
 }
@@ -58,7 +60,7 @@ interface Cell {
                 [disabled]="c.disabled"
                 [style.opacity]="c.disabled ? 0.3 : 1"
                 accessibilityRole="button"
-                [accessibilityLabel]="c.dateKey"
+                [accessibilityLabel]="c.spoken"
                 [accessibilityState]="{ selected: c.selected, disabled: c.disabled }"
                 (press)="date.set(c.dateKey)"
               >
@@ -171,7 +173,7 @@ export class CalendarPicker implements OnInit {
     const selected = this.date();
     const out: Cell[] = [];
     for (let i = 0; i < lead; i++) {
-      out.push({ key: `b${i}`, day: 0, dateKey: '', disabled: true, selected: false });
+      out.push({ key: `b${i}`, day: 0, dateKey: '', spoken: '', disabled: true, selected: false });
     }
     for (let day = 1; day <= total; day++) {
       const dateKey = toDateKey(new Date(year, month, day));
@@ -179,6 +181,7 @@ export class CalendarPicker implements OnInit {
         key: dateKey,
         day,
         dateKey,
+        spoken: `${WEEKDAY_LONG[weekdayOf(new Date(year, month, day))].toLowerCase()} ${day} de ${MONTH_NAMES[month].toLowerCase()}`,
         disabled: dateKey < min,
         selected: dateKey === selected,
       });

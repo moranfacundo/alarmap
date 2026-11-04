@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copia de shared/theme/palette.ts (claro) para la pantalla nativa de alarma. Mantener sincronizado. -->
+<resources>
+  <color name="alarmap_bg">#ffffff</color>
+  <color name="alarmap_surface_alt">#e6e6e6</color>
+  <color name="alarmap_text">#111111</color>
+  <color name="alarmap_text_muted">#595959</color>
+  <color name="alarmap_accent">#111111</color>
+  <color name="alarmap_on_accent">#ffffff</color>
+</resources>

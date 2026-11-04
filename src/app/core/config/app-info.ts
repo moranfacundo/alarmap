@@ -2,7 +2,7 @@
  * Datos fijos de la aplicación y de su autoría.
  * Se concentran aquí para cambiarlos en un solo lugar.
  */
-export const APP_NAME = 'Alarmap';
+export const APP_NAME = 'AlarMap';
 
 export const APP_DESCRIPTION = 'Alarmas simples, locales y sin cuentas.';
 

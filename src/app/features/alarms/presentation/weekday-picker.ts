@@ -29,11 +29,11 @@ import { WEEKDAY_INITIAL, WEEKDAY_LONG } from '../../../shared/utils/time-format
       justify-content: space-between;
     }
     .day {
-      width: 42px;
-      height: 42px;
+      width: 46px;
+      height: 46px;
       align-items: center;
       justify-content: center;
-      border-radius: 21px;
+      border-radius: 23px;
       border-width: 1px;
       border-color: var(--border);
     }

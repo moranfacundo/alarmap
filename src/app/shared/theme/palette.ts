@@ -26,7 +26,7 @@ export const PALETTE: Record<Scheme, Palette> = {
     surfaceAlt: '#e6e6e6',
     text: '#111111',
     textMuted: '#595959',
-    border: '#d4d4d4',
+    border: '#8f8f8f', // 3.2:1 sobre --bg (WCAG 1.4.11: bordes de controles)
     accent: '#111111',
     onAccent: '#ffffff',
     switchOn: '#111111',
@@ -39,7 +39,7 @@ export const PALETTE: Record<Scheme, Palette> = {
     surfaceAlt: '#2c2c2c',
     text: '#ffffff',
     textMuted: '#a3a3a3',
-    border: '#3a3a3a',
+    border: '#636363', // 3.5:1 sobre --bg (WCAG 1.4.11: bordes de controles)
     accent: '#ffffff',
     onAccent: '#000000',
     switchOn: '#9a9a9a',

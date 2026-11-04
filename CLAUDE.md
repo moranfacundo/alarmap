@@ -1,6 +1,6 @@
 @AGENTS.md
 
-# Alarmap — contexto permanente
+# AlarMap — contexto permanente
 
 Android-only alarm/reminder app. Angular Native (Expo SDK 58, RN 0.88, Angular 22) + Kotlin (Expo Modules API) + SQLite. Especificación funcional en `docs/PROJECT_SPEC.md`; decisiones abiertas en `docs/OPEN_DECISIONS.md`.
 
@@ -25,8 +25,11 @@ Entorno: `JAVA_HOME=$HOME/jdk-17`, `ANDROID_HOME=$HOME/Android/Sdk` (no exportad
 ## Convenciones de código
 - Comentarios y docs en ESPAÑOL (decisión del autor): explicar el porqué, no lo obvio. UI también en español (strings hardcodeados por ahora; i18n pendiente).
 - Autoría y enlaces: `src/app/core/config/app-info.ts` (se muestran en Acerca de).
-- Colores solo desde `shared/theme/palette.ts` vía `var(--x)`; paleta monocromática. Tipografía Inter local (`assets/fonts/`, declarada en `shared/theme/global-styles.ts`).
+- Colores solo desde `shared/theme/palette.ts` vía `var(--x)`; paleta monocromática. Única excepción: la pantalla nativa de alarma (`modules/alarm-engine/.../res/values{,-night}/colors.xml`), copia manual de la paleta; y el icono de la app (`scripts/generate-icons.py`, colores del logo de Angular). Tipografía Inter local (`assets/fonts/`, declarada en `shared/theme/global-styles.ts`).
 - Pantallas = rutas en `app.routes.ts` (pila nativa `@ng-native/router`). Estado con signals en `application/*.store.ts`; SQLite solo en `data/*.repository.ts`.
 
+## UX/UI
+Revisión de pantallas con el plugin `design` de Anthropic y el checklist Android en `docs/UX_REVIEW.md`. No conectar servicios externos (Figma, analítica).
+
 ## Identidad
-App "Alarmap", package `com.fmoran.app` (definido por el autor), scheme `alarmap`. Política de privacidad: URL pendiente (`PRIVACY_POLICY_URL`).
+App "AlarMap", package `com.fmoran.app` (definido por el autor), scheme `alarmap`. Política de privacidad: URL pendiente (`PRIVACY_POLICY_URL`).
