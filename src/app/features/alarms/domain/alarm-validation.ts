@@ -12,6 +12,11 @@ export function validateDraft(draft: AlarmDraft, now: Date = new Date()): string
     errors.push('Los minutos no son válidos.');
   }
 
+  if (draft.category === 'routine') {
+    if (draft.type !== 'weekly') errors.push('Una rutina debe repetirse por días de la semana.');
+    if (draft.tags.length === 0) errors.push('Agrega al menos un medicamento o tarea.');
+  }
+
   switch (draft.type) {
     case 'once':
       if (!draft.date || !parseDateKey(draft.date)) {

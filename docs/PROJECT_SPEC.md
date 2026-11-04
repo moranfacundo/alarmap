@@ -30,7 +30,7 @@ Tema del sistema (claro/oscuro), sin selector. Paleta blanco/negro/grises, contr
 Vibración on/off · duración Snooze · tono por defecto · info app · versión · política de privacidad · formato 12/24 h. Sin volumen.
 
 ## Datos
-SQLite: Alarm (id, label, enabled, type, hour, minute, date, weekdays, day_of_month, tone_id, created/updated) y Settings (vibration, snooze, default tone, time format).
+SQLite: Alarm (id, label, enabled, type, hour, minute, date, weekdays, day_of_month, tone_id, category, tags, created/updated) y Settings (vibration, snooze, default tone, time format).
 
 ## Estado de implementación
 Implementado (UI + datos, sin motor Android):

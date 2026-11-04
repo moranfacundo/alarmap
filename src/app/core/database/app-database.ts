@@ -41,6 +41,16 @@ export const appDb = database(
           INSERT INTO settings (id) VALUES (1);
         `),
     },
+    {
+      // Categoría medicación/rutina. `tags` es un arreglo JSON de strings (lista corta, sin tabla aparte).
+      to: 2,
+      up: (db) =>
+        db.execAsync(`
+          ALTER TABLE alarm ADD COLUMN category TEXT NOT NULL DEFAULT 'standard'
+            CHECK (category IN ('standard','routine'));
+          ALTER TABLE alarm ADD COLUMN tags TEXT NOT NULL DEFAULT '[]';
+        `),
+    },
   ],
   { onOpen: (db) => db.execAsync('PRAGMA foreign_keys = ON; PRAGMA journal_mode = WAL;') },
 );

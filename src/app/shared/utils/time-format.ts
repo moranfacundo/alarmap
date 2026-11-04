@@ -45,6 +45,9 @@ export const ALARM_TYPE_LABEL: Record<AlarmType, string> = {
   monthly: 'Mensual',
 };
 
+/** Nombre mostrado de la categoría "rutina" (sustituye al del tipo en la tarjeta). */
+export const ROUTINE_LABEL = 'Medicación / rutina';
+
 /** Resume los días elegidos: "Todos los días", "Lun a Vie" o "Lun, Mié". */
 export function describeWeekdays(days: readonly Weekday[]): string {
   if (days.length === 7) return 'Todos los días';

@@ -1,6 +1,28 @@
 /** Tipos de alarma soportados. */
 export type AlarmType = 'once' | 'weekly' | 'monthly';
 
+/**
+ * Categoría de la alarma, ortogonal a la recurrencia: `routine` (medicación/rutina) se programa
+ * como `weekly` y solo añade tokens descriptivos.
+ */
+export type AlarmCategory = 'standard' | 'routine';
+
+/** Límites de los tokens de una alarma de rutina. */
+export const MAX_TAGS = 10;
+export const MAX_TAG_LENGTH = 30;
+
+/**
+ * Agrega un token a la lista: recorta y colapsa espacios, ignora vacíos y duplicados
+ * (sin distinguir mayúsculas) y respeta los máximos. Devuelve la misma lista si no cambia.
+ */
+export function addTag(tags: readonly string[], raw: string): readonly string[] {
+  const tag = raw.trim().replace(/\s+/g, ' ').slice(0, MAX_TAG_LENGTH).trim();
+  if (!tag || tags.length >= MAX_TAGS) return tags;
+  const lower = tag.toLowerCase();
+  if (tags.some((t) => t.toLowerCase() === lower)) return tags;
+  return [...tags, tag];
+}
+
 /** Día de la semana: 0 = lunes ... 6 = domingo. */
 export type Weekday = 0 | 1 | 2 | 3 | 4 | 5 | 6;
 
@@ -25,6 +47,9 @@ export interface Alarm {
   readonly dayOfMonth: number | null;
   /** Identificador del tono (ver `tones.ts`). */
   readonly toneId: string;
+  readonly category: AlarmCategory;
+  /** Tokens (ej. "x1 Aciclovir"); solo para `routine`, vacío en el resto. */
+  readonly tags: readonly string[];
   /** Epoch en milisegundos. */
   readonly createdAt: number;
   /** Epoch en milisegundos. */

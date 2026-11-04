@@ -21,6 +21,8 @@ const alarm = (id: string, hour: number, minute: number, label: string): Alarm =
   weekdays: [0, 1, 2, 3, 4],
   dayOfMonth: null,
   toneId: 'default',
+  category: 'standard',
+  tags: [],
   createdAt: 1,
   updatedAt: 1,
 });
@@ -72,4 +74,30 @@ test('una alarma semanal sin días no se puede guardar', async () => {
   await userEvent.press(await screen.findByRole('button', { name: /^Semanal/ }));
   await userEvent.press(await screen.findByRole('button', { name: 'Guardar' }));
   expect(await screen.findByText('Elige al menos un día de la semana.')).toBeTruthy();
+});
+
+test('rutina: tokens se agregan como badges, se quitan y se guardan en la lista', async () => {
+  await render(App, { providers: providers([]) });
+  await userEvent.press(await screen.findByRole('button', { name: 'Crear alarma' }));
+  await userEvent.press(await screen.findByRole('button', { name: /^Medicación \/ rutina/ }));
+
+  // Sin tokens no se puede guardar.
+  await userEvent.press(await screen.findByRole('button', { name: 'Guardar' }));
+  expect(await screen.findByText('Agrega al menos un medicamento o tarea.')).toBeTruthy();
+
+  const user = userEvent.setup();
+  const input = await screen.findByPlaceholderText('Ej. x1 Paracetamol');
+  await user.type(input, 'x1 Aciclovir');
+  await user.press(screen.getByRole('button', { name: 'Agregar' }));
+  await user.type(input, 'x1 levofloxacina');
+  await user.press(screen.getByRole('button', { name: 'Agregar' }));
+  expect(screen.getByText('x1 Aciclovir')).toBeTruthy();
+  expect(screen.getByText('x1 levofloxacina')).toBeTruthy();
+
+  await user.press(screen.getByRole('button', { name: 'Quitar x1 levofloxacina' }));
+  expect(screen.queryByText('x1 levofloxacina')).toBeNull();
+
+  await user.press(screen.getByRole('button', { name: 'Guardar' }));
+  expect(await screen.findByText('x1 Aciclovir')).toBeTruthy();
+  expect(screen.getByText(/Medicación \/ rutina · Todos los días/)).toBeTruthy();
 });

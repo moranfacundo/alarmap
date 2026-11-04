@@ -14,6 +14,8 @@ const base: AlarmDraft = {
   weekdays: [],
   dayOfMonth: null,
   toneId: 'default',
+  category: 'standard',
+  tags: [],
 };
 
 test('mensual día 31: febrero se omite y suena en marzo', () => {
