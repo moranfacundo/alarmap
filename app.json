@@ -2,7 +2,7 @@
   "expo": {
     "name": "AlarMap",
     "slug": "alarmap",
-    "version": "0.1.0",
+    "version": "0.2.0",
     "platforms": [
       "android"
     ],
@@ -18,7 +18,13 @@
       },
       "predictiveBackGestureEnabled": false,
       "package": "com.fmoran.app",
-      "versionCode": 1
+      "versionCode": 2,
+      "blockedPermissions": [
+        "android.permission.INTERNET",
+        "android.permission.SYSTEM_ALERT_WINDOW",
+        "android.permission.READ_EXTERNAL_STORAGE",
+        "android.permission.WRITE_EXTERNAL_STORAGE"
+      ]
     },
     "scheme": "alarmap",
     "extra": {
@@ -38,7 +44,8 @@
         }
       ],
       "expo-font",
-      "expo-web-browser"
+      "expo-web-browser",
+      "./plugins/with-release-signing.js"
     ]
   }
 }

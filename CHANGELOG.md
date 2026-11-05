@@ -5,12 +5,19 @@ Formato basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/) y 
 
 ## [Sin publicar]
 
+## [0.2.0] - 2026-11-04
+
+Primera versión con motor de alarmas, preparada para Google Play (prueba interna).
+
 ### Agregado
 - Motor de alarmas Android (Kotlin): programación con `AlarmManager.setAlarmClock`, pantalla de alarma sobre el bloqueo, Posponer/Detener, vibración, recuperación tras reinicio y cambios de hora/zona.
 - Cinco tonos propios (Clásico, Suave, Digital, Campana, Pulso) generados con `scripts/generate-tones.py`; previsualización al elegir tono.
 - Aviso en la lista cuando faltan notificaciones o pantalla completa.
+- Firma de release con keystore de upload (plugin `plugins/with-release-signing.js`; credenciales fuera del repo).
+- Política de privacidad (`docs/PRIVACY_POLICY.md`) y su URL en la app.
 
 ### Cambiado
+- Se bloquean `INTERNET`, `SYSTEM_ALERT_WINDOW` y almacenamiento externo en el manifest de release (la app no los usa).
 - Nombre visible: "AlarMap". Icono nuevo (reloj despertador con campanas, colores del logo de Angular).
 - Menú hamburguesa (Ajustes y Acerca de) en lugar del texto "Ajustes" en la barra principal.
 - Toast al guardar ("Alarma Guardada" / "Alarma actualizada") y campos de texto con borde.
@@ -34,5 +41,6 @@ Primera versión de desarrollo (pre-lanzamiento): interfaz y datos. **Las alarma
 - Módulo nativo `alarm-engine` (Kotlin) con una función de prueba y su puente en Angular.
 - Pantalla "Acerca de" con la autoría.
 
-[Sin publicar]: https://github.com/moranfacundo/alarmap/compare/v0.1.0...HEAD
+[Sin publicar]: https://github.com/moranfacundo/alarmap/compare/v0.2.0...HEAD
+[0.2.0]: https://github.com/moranfacundo/alarmap/compare/v0.1.0...v0.2.0
 [0.1.0]: https://github.com/moranfacundo/alarmap/releases/tag/v0.1.0

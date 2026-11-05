@@ -17,7 +17,8 @@ export const AUTHOR = {
 } as const;
 
 /**
- * URL pública de la política de privacidad.
- * PENDIENTE: definir antes de publicar (ver docs/OPEN_DECISIONS.md). Con `null` la app avisa que aún no existe.
+ * URL pública de la política de privacidad (texto versionado en `docs/PRIVACY_POLICY.md`).
+ * Con `null` la app muestra un resumen en un diálogo en lugar de abrir el navegador.
  */
-export const PRIVACY_POLICY_URL: string | null = null;
+export const PRIVACY_POLICY_URL: string | null =
+  'https://github.com/moranfacundo/alarmap/blob/main/docs/PRIVACY_POLICY.md';
