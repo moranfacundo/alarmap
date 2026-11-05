@@ -144,8 +144,8 @@ test('editor: salir con cambios sin guardar pide confirmar; sin cambios sale dir
 function fakeEngine(status: { notifications: boolean; fullScreen: boolean }): NativeAlarmEngine {
   return {
     SDK_INT: 34,
-    reschedule: vi.fn(async () => {}),
-    rescheduleAll: vi.fn(async () => {}),
+    sync: vi.fn(async () => {}),
+    takeDisabledOnce: vi.fn(async () => []),
     getPermissionStatus: vi.fn(async () => ({ ...status, exactAlarm: true })),
     requestNotificationPermission: vi.fn(async () => ({ granted: true, canAskAgain: true })),
     openNotificationSettings: vi.fn(async () => {}),

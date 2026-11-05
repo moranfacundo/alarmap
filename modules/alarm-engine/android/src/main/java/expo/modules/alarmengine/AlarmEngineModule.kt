@@ -13,8 +13,8 @@ import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition
 
 /**
- * Puente Angular <-> motor de alarmas. El motor lee SQLite directamente, así que aquí solo se
- * avisa qué alarma cambió (el id), se consultan permisos y se previsualizan tonos.
+ * Puente Angular <-> motor de alarmas. El motor NO abre SQLite: recibe snapshots JSON de JS (`sync`),
+ * y además se consultan permisos y se previsualizan tonos.
  * Mantener sincronizado con NativeAlarmEngine en src/app/core/native/alarm-engine.service.ts.
  */
 class AlarmEngineModule : Module() {
@@ -35,10 +35,11 @@ class AlarmEngineModule : Module() {
     }
     OnStopObserving("onAlarmsChanged") { AlarmEvents.onAlarmsChanged = null }
 
-    // Recalcula y programa una alarma tras guardarla, activarla/desactivarla o borrarla.
-    AsyncFunction("reschedule") { alarmId: String -> AlarmScheduler.reschedule(context, alarmId) }
+    // JS (dueña de SQLite) entrega el estado completo; el motor lo guarda y reprograma todo.
+    AsyncFunction("sync") { snapshotJson: String -> AlarmScheduler.sync(context, snapshotJson) }
 
-    AsyncFunction("rescheduleAll") { AlarmScheduler.rescheduleAll(context) }
+    // Ids de alarmas "once" que el motor desactivó por su cuenta; JS las refleja en SQLite.
+    AsyncFunction("takeDisabledOnce") { AlarmSnapshot.takeDisabled(context) }
 
     AsyncFunction("getPermissionStatus") {
       val nm = context.getSystemService(NotificationManager::class.java)

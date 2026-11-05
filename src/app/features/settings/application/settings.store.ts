@@ -1,4 +1,5 @@
 import { Injectable, inject, signal } from '@angular/core';
+import { EngineSync } from '../../alarms/application/engine-sync.ts';
 import { SettingsRepository } from '../data/settings.repository.ts';
 import { DEFAULT_SETTINGS, type Settings, clampSnooze } from '../domain/settings.model.ts';
 
@@ -6,6 +7,7 @@ import { DEFAULT_SETTINGS, type Settings, clampSnooze } from '../domain/settings
 @Injectable({ providedIn: 'root' })
 export class SettingsStore {
   private readonly repo = inject(SettingsRepository);
+  private readonly engineSync = inject(EngineSync);
 
   readonly settings = signal<Settings>(DEFAULT_SETTINGS);
   readonly loaded = signal(false);
@@ -27,5 +29,7 @@ export class SettingsStore {
     };
     this.settings.set(next); // actualización optimista: la UI responde de inmediato
     await this.repo.save(next);
+    // Snooze/vibración/formato viven en el snapshot del motor.
+    await this.engineSync.push().catch(() => {});
   }
 }
