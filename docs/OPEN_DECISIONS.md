@@ -7,7 +7,7 @@
 | 3 | Min/max del Snooze | Default 5 min. Rango sin definir. |
 | 4 | Nombre comercial | RESUELTO: "AlarMap" (nombre visible; `slug`, scheme y package no cambian). |
 | 5 | Package Android | RESUELTO por el autor: `com.fmoran.app` (irreversible una vez publicado en Play). |
-| 6 | Política de privacidad / URL | Sin definir. |
+| 6 | Política de privacidad / URL | RESUELTO: `docs/PRIVACY_POLICY.md`, servida desde GitHub; URL en `PRIVACY_POLICY_URL` (`core/config/app-info.ts`). |
 | 7 | Audio definitivo | RESUELTO provisional: 5 tonos propios generados por `scripts/generate-tones.py` en `res/raw` del módulo. Reemplazables por CC0 (Freesound, Kenney, OpenGameArt). |
 | 8 | Inter (Regular/Medium/SemiBold/Bold) | `assets/fonts/` vacío. Empaquetar localmente. |
 | 9 | Permiso alarmas exactas | RESUELTO: `USE_EXACT_ALARM` (función principal de la app = alarma; concedido automáticamente). Revisar declaración Play. |
@@ -39,3 +39,11 @@
 | `RECEIVE_BOOT_COMPLETED` | Re-armar alarmas tras reiniciar. |
 | `FOREGROUND_SERVICE` + `..._SYSTEM_EXEMPTED` | Mantener audio/vibración mientras suena. |
 | `VIBRATE` | Vibración de la alarma. |
+
+## Permisos bloqueados (`android.blockedPermissions` en `app.json`)
+Expo los añade por defecto y la app no los usa; se quitan del manifest de release para cumplir "sin red" y la política de Play.
+| Permiso | Motivo |
+|---|---|
+| `INTERNET` | La app no usa red. Metro/dev lo obtiene del manifest de debug. |
+| `SYSTEM_ALERT_WINDOW` | La pantalla de alarma usa `showWhenLocked`/full-screen intent, no superposiciones. |
+| `READ_EXTERNAL_STORAGE`, `WRITE_EXTERNAL_STORAGE` | Sin acceso a archivos del usuario. |

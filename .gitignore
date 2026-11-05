@@ -50,3 +50,6 @@ metro.log
 
 # Artefactos de build de módulos locales
 modules/*/android/build/
+
+# Documentación local de publicación en Google Play (no se versiona)
+/play-store/
