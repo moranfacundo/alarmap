@@ -17,11 +17,21 @@ que programa conmigo. Las decisiones del producto y la revisión del código son
 
 ## Estado
 
-Versión de desarrollo (`0.x`). Ya están la interfaz y los datos: crear, editar y eliminar alarmas de una vez,
-semanales y mensuales, ajustes, y tema claro u oscuro según el sistema.
-**Las alarmas todavía no suenan**: el motor nativo de Android (Kotlin) está en desarrollo.
+Versión `0.2.0`. Crear, editar y eliminar alarmas de una vez, semanales y mensuales; motor nativo en Kotlin
+(`AlarmManager`) con pantalla de alarma sobre el bloqueo, Posponer y Detener; cinco tonos propios; ajustes;
+y tema claro u oscuro según el sistema. La publicación en Google Play está en pausa: por ahora se compila desde este repo.
 
 Tecnología: [Angular Native](https://ng-native.com) sobre Expo, TypeScript, Kotlin (Expo Modules) y SQLite.
+
+## Capturas
+
+<p>
+  <img src="docs/capturas/01-lista-alarmas.png" width="180" alt="Lista de alarmas en tema oscuro">
+  <img src="docs/capturas/02-editor-hora.png" width="180" alt="Editor con selector circular de hora">
+  <img src="docs/capturas/03-editor-opciones.png" width="180" alt="Editor con opciones de la alarma">
+  <img src="docs/capturas/04-alarma-sonando.png" width="180" alt="Pantalla de alarma sonando con Posponer y Detener">
+  <img src="docs/capturas/05-ajustes.png" width="180" alt="Pantalla de ajustes">
+</p>
 
 ## Requisitos
 
