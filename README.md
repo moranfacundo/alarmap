@@ -1,4 +1,4 @@
-# Alarmap
+# AlarMap
 
 Alarmas simples, locales y sin cuentas para Android.
 
@@ -7,7 +7,7 @@ Alarmas simples, locales y sin cuentas para Android.
 
 ## Quiénes lo hacen
 
-Hola, soy **Facundo Morán**, desarrollador. Alarmap es mi app de alarmas: sin cuentas, sin publicidad,
+Hola, soy **Facundo Morán**, desarrollador. AlarMap es mi app de alarmas: sin cuentas, sin publicidad,
 sin telemetría y con todos los datos guardados solo en tu teléfono.
 
 La desarrollo junto a **Claude** (de [Anthropic](https://www.anthropic.com)), mi coautor: un asistente de IA
@@ -51,7 +51,7 @@ adb reverse tcp:8081 tcp:8081
 npm start
 ```
 
-Abre la app **Alarmap** en el teléfono. Como usa un módulo nativo propio, hace falta esta compilación:
+Abre la app **AlarMap** en el teléfono. Como usa un módulo nativo propio, hace falta esta compilación:
 Expo Go muestra la interfaz, pero no el módulo Kotlin.
 
 ## Probarlo

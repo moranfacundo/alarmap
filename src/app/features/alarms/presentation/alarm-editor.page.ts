@@ -170,27 +170,28 @@ const ROUTINE_HELP = 'Recordatorio diario o ciertos días para medicación o rut
                 <app-tone-picker [(toneId)]="toneId" />
               </view>
 
-              @for (error of errors(); track error) {
-                <text class="error" accessibilityRole="alert">{{ error }}</text>
-              }
-
-              <view class="buttons">
-                <pressable
-                  class="primary"
-                  accessibilityRole="button"
-                  [disabled]="saving()"
-                  (press)="save()"
-                >
-                  <text class="primary-text">Guardar</text>
+              @if (isEditing()) {
+                <pressable class="secondary" accessibilityRole="button" (press)="remove()">
+                  <text class="secondary-text">Eliminar alarma</text>
                 </pressable>
-                @if (isEditing()) {
-                  <pressable class="secondary" accessibilityRole="button" (press)="remove()">
-                    <text class="secondary-text">Eliminar alarma</text>
-                  </pressable>
-                }
-              </view>
+              }
             </view>
           </scroll-view>
+
+          <!-- Barra fija fuera del scroll: Guardar y los errores siempre visibles, sin bajar al final. -->
+          <view class="footer">
+            @for (error of errors(); track error) {
+              <text class="error" accessibilityRole="alert">{{ error }}</text>
+            }
+            <pressable
+              class="primary"
+              accessibilityRole="button"
+              [disabled]="saving()"
+              (press)="save()"
+            >
+              <text class="primary-text">Guardar</text>
+            </pressable>
+          </view>
         </keyboard-avoiding-view>
       }
     </safe-area-view>
@@ -250,6 +251,8 @@ const ROUTINE_HELP = 'Recordatorio diario o ciertos días para medicación o rut
       padding: 0 16px;
       border-radius: 16px;
       background-color: var(--surface);
+      border-width: 1px;
+      border-color: var(--border);
       color: var(--text);
       font-family: Inter;
       font-size: 16px;
@@ -288,8 +291,12 @@ const ROUTINE_HELP = 'Recordatorio diario o ciertos días para medicación o rut
       font-size: 14px;
       font-weight: 500;
     }
-    .buttons {
-      gap: 12px;
+    .footer {
+      gap: 8px;
+      padding: 12px 16px 16px;
+      border-top-width: 1px;
+      border-top-color: var(--border);
+      background-color: var(--bg);
     }
     .primary {
       min-height: 52px;
@@ -354,6 +361,9 @@ export class AlarmEditorPage implements OnInit {
   protected readonly tags = signal<readonly string[]>([]);
   protected readonly tagInput = signal('');
 
+  /** Foto del formulario al abrirlo (JSON del borrador), para detectar cambios sin guardar. */
+  private readonly initialSnapshot = signal('');
+
   protected readonly errors = signal<string[]>([]);
   protected readonly saving = signal(false);
 
@@ -389,7 +399,7 @@ export class AlarmEditorPage implements OnInit {
     }
     const alarm = this.store.byId(id);
     if (!alarm) {
-      this.back(); // la alarma ya no existe
+      void this.back(); // la alarma ya no existe
       return;
     }
     this.type.set(alarm.type);
@@ -403,6 +413,20 @@ export class AlarmEditorPage implements OnInit {
     this.category.set(alarm.category);
     this.tags.set(alarm.tags);
     this.step.set('form');
+    this.markClean();
+  }
+
+  /** Toma la foto de referencia: lo que hay ahora en pantalla cuenta como "sin cambios". */
+  private markClean(): void {
+    this.initialSnapshot.set(JSON.stringify(this.draft()));
+  }
+
+  /** Hay cambios sin guardar (o texto pendiente de convertir en token). */
+  private hasUnsavedChanges(): boolean {
+    return (
+      this.step() === 'form' &&
+      (JSON.stringify(this.draft()) !== this.initialSnapshot() || this.tagInput().trim() !== '')
+    );
   }
 
   /** Valores iniciales de una alarma nueva: próxima hora en punto, tono por defecto y fecha válida. */
@@ -427,6 +451,7 @@ export class AlarmEditorPage implements OnInit {
     }
     this.errors.set([]);
     this.step.set('form');
+    this.markClean();
   }
 
   /** Convierte el texto del campo en un token (badge) y limpia el campo. */
@@ -440,10 +465,19 @@ export class AlarmEditorPage implements OnInit {
   }
 
   /** Volver: del formulario al paso de tipo (si es nueva) o salir de la pantalla. */
-  protected back(): void {
+  protected async back(): Promise<void> {
     if (this.step() === 'form' && !this.isEditing()) {
       this.step.set('type');
       return;
+    }
+    if (this.hasUnsavedChanges()) {
+      const discard = await this.dialogs.confirm('¿Descartar cambios?', {
+        message: 'La alarma no se ha guardado y los cambios se perderán.',
+        confirm: 'Descartar',
+        cancel: 'Seguir editando',
+        destructive: true,
+      });
+      if (!discard) return;
     }
     this.nav.back();
   }
@@ -456,7 +490,9 @@ export class AlarmEditorPage implements OnInit {
 
     this.saving.set(true);
     try {
+      const editing = this.isEditing();
       await this.store.save(this.draft(), this.id());
+      this.dialogs.notify(editing ? 'Alarma actualizada' : 'Alarma Guardada');
       this.nav.back();
     } catch (e) {
       this.errors.set([`No se pudo guardar la alarma: ${String(e)}`]);

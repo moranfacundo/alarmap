@@ -26,5 +26,5 @@ body:
   - type: input
     id: version
     attributes:
-      label: Versión de Alarmap
+      label: Versión de AlarMap
       placeholder: 0.1.0

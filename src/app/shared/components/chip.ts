@@ -19,11 +19,11 @@ import { Pressable, Text } from '@ng-native/components';
   `,
   styles: `
     .chip {
-      min-height: 40px;
+      min-height: 48px;
       padding: 0 16px;
       align-items: center;
       justify-content: center;
-      border-radius: 20px;
+      border-radius: 24px;
       border-width: 1px;
       border-color: var(--border);
       background-color: var(--bg);

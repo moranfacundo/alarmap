@@ -31,8 +31,8 @@ import { Pressable, Text, View } from '@ng-native/components';
       padding: 0 16px;
     }
     .back {
-      width: 40px;
-      height: 40px;
+      width: 48px;
+      height: 48px;
       align-items: center;
       justify-content: center;
       margin-left: -8px;

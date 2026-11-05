@@ -94,7 +94,7 @@ import { TonePicker } from './tone-picker.ts';
 
           <view class="section links">
             <pressable class="link" accessibilityRole="button" (press)="about()">
-              <text class="row-title">Acerca de Alarmap</text>
+              <text class="row-title">Acerca de AlarMap</text>
             </pressable>
             <pressable class="link" accessibilityRole="button" (press)="privacy()">
               <text class="row-title">Política de privacidad</text>
@@ -219,7 +219,7 @@ export class SettingsPage {
       // Aún no hay URL pública definida (ver docs/OPEN_DECISIONS.md #6).
       await this.dialogs.tell(
         'Política de privacidad',
-        'Alarmap no recopila ni envía datos: todo se guarda solo en tu dispositivo. El texto completo estará disponible próximamente.',
+        'AlarMap no recopila ni envía datos: todo se guarda solo en tu dispositivo. El texto completo estará disponible próximamente.',
       );
       return;
     }

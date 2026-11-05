@@ -40,4 +40,4 @@ Implementado (UI + datos, sin motor Android):
 - Persistencia SQLite, tema claro/oscuro del sistema, Inter local, autoría con enlaces.
 - Regla de recurrencia pura (`nextOccurrence`) con tests, incluida la omisión de meses sin el día elegido.
 
-NO implementado (requiere motor Kotlin): programar alarmas en el sistema, sonar, pantalla de alarma, posponer, vibración real, recuperación tras reinicio, permisos, previsualizar tonos.
+Motor Android implementado (ver `docs/ANDROID_ALARM_ENGINE.md`): programación en el sistema, sonar, pantalla de alarma, posponer, vibración, recuperación tras reinicio/cambio de hora, permisos y previsualización de tonos. Pendiente: validación en dispositivo real y política de repetición del tono (OPEN #1).

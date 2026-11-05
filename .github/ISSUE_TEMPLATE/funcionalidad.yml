@@ -5,7 +5,7 @@ body:
   - type: textarea
     id: propuesta
     attributes:
-      label: ¿Qué te gustaría que hiciera Alarmap?
+      label: ¿Qué te gustaría que hiciera AlarMap?
     validations:
       required: true
   - type: textarea

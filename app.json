@@ -1,6 +1,6 @@
 {
   "expo": {
-    "name": "Alarmap",
+    "name": "AlarMap",
     "slug": "alarmap",
     "version": "0.1.0",
     "platforms": [
@@ -11,7 +11,7 @@
     "userInterfaceStyle": "automatic",
     "android": {
       "adaptiveIcon": {
-        "backgroundColor": "#E6F4FE",
+        "backgroundColor": "#DC087D",
         "foregroundImage": "./assets/android-icon-foreground.png",
         "backgroundImage": "./assets/android-icon-background.png",
         "monochromeImage": "./assets/android-icon-monochrome.png"

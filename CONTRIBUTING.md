@@ -1,4 +1,4 @@
-# Cómo contribuir a Alarmap
+# Cómo contribuir a AlarMap
 
 Gracias por tu interés. Este documento explica el flujo de trabajo. Para levantar el proyecto en local,
 mira el [README](README.md).
@@ -62,5 +62,5 @@ Se usa [SemVer](https://semver.org/lang/es/): `vMAJOR.MINOR.PATCH`. Mientras la 
    ```sh
    git tag -a vX.Y.Z -m "Versión X.Y.Z"
    git push origin vX.Y.Z
-   gh release create vX.Y.Z --title "Alarmap X.Y.Z" --notes-file <notas>   # --prerelease mientras sea 0.x
+   gh release create vX.Y.Z --title "AlarMap X.Y.Z" --notes-file <notas>   # --prerelease mientras sea 0.x
    ```
