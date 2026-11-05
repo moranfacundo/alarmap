@@ -74,27 +74,37 @@ object AlarmScheduler {
   }
 
   /**
-   * Reacción a una acción del usuario sobre una alarma (guardar, activar/desactivar, borrar):
-   * recalcula su programación y descarta cualquier posposición pendiente.
+   * Recibe el snapshot nuevo de JS y reprograma. Las alarmas borradas o modificadas pierden su
+   * posposición pendiente (equivale a la acción del usuario sobre ellas).
    */
-  fun reschedule(context: Context, id: String) {
-    cancelSnooze(context, id)
-    val alarm = AlarmDb.get(context, id)
-    if (alarm == null) cancel(context, ACTION_FIRE, id) else scheduleBase(context, alarm)
+  fun sync(context: Context, json: String) {
+    val old = AlarmSnapshot.listAll(context)
+    AlarmSnapshot.replace(context, json)
+    for (o in old) {
+      val now = AlarmSnapshot.get(context, o.id)
+      if (now == null) {
+        cancelSnooze(context, o.id)
+        cancel(context, ACTION_FIRE, o.id)
+      } else if (now != o) {
+        cancelSnooze(context, o.id)
+      }
+    }
+    rescheduleAll(context)
   }
 
   /**
-   * Recalcula todas las alarmas (arranque de la app, reinicio, cambio de hora o zona).
+   * Recalcula todas las alarmas desde el snapshot (sync,  reinicio, cambio de hora o zona).
    * Las posposiciones NO se cancelan aquí: una alarma "once" ya disparada está desactivada y aun
    * así su posposición debe sonar. Las posposiciones vencidas se descartan.
    */
   fun rescheduleAll(context: Context) {
     val now = System.currentTimeMillis()
-    for (alarm in AlarmDb.listAll(context)) {
+    for (alarm in AlarmSnapshot.listAll(context)) {
       if (alarm.enabled && alarm.schedule.type == "once" &&
         AlarmRecurrence.next(alarm.schedule, ZonedDateTime.now()) == null
       ) {
-        AlarmDb.disableOnce(context, alarm.id) // la fecha ya pasó (p. ej. teléfono apagado)
+        AlarmSnapshot.disableOnce(context, alarm.id) // la fecha ya pasó (p. ej. teléfono apagado)
+        AlarmEvents.onAlarmsChanged?.invoke()
         continue
       }
       scheduleBase(context, alarm)

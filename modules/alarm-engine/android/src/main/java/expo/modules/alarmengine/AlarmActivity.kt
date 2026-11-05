@@ -59,8 +59,8 @@ class AlarmActivity : Activity() {
   private fun dp(v: Int) = (v * resources.displayMetrics.density).toInt()
 
   private fun render(alarmId: String?) {
-    val alarm = alarmId?.let { AlarmDb.get(this, it) }
-    val settings = AlarmDb.settings(this)
+    val alarm = alarmId?.let { AlarmSnapshot.get(this, it) }
+    val settings = AlarmSnapshot.settings(this)
     val regular = resources.getFont(R.font.inter_regular)
     val semibold = resources.getFont(R.font.inter_semibold)
     val bold = resources.getFont(R.font.inter_bold)

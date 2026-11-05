@@ -69,8 +69,8 @@ class AlarmRingingService : Service() {
       finish(notifyEnded = false)
       return
     }
-    val alarm = AlarmDb.get(this, id)
-    val settings = AlarmDb.settings(this)
+    val alarm = AlarmSnapshot.get(this, id)
+    val settings = AlarmSnapshot.settings(this)
     currentId = id
     currentLabel = alarm?.label.orEmpty()
 
@@ -98,7 +98,7 @@ class AlarmRingingService : Service() {
   private fun snooze() {
     val id = currentId
     if (id != null) {
-      val minutes = AlarmDb.settings(this).snoozeMinutes
+      val minutes = AlarmSnapshot.settings(this).snoozeMinutes
       AlarmScheduler.scheduleSnooze(this, id, System.currentTimeMillis() + minutes * 60_000L)
     }
     finish(notifyEnded = true)

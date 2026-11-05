@@ -22,12 +22,12 @@ export interface NativeSubscription {
 /**
  * Refleja exactamente lo que expone modules/alarm-engine en Kotlin (AlarmEngineModule.kt).
  * No hay verificación automática: al cambiar Kotlin hay que actualizar esta interfaz a mano.
- * El motor lee SQLite directamente, por eso `reschedule` solo recibe el id.
+ * El motor NO abre SQLite: JS le envía un snapshot JSON (`sync`) tras cada cambio.
  */
 export interface NativeAlarmEngine {
   readonly SDK_INT: number;
-  reschedule(alarmId: string): Promise<void>;
-  rescheduleAll(): Promise<void>;
+  sync(snapshotJson: string): Promise<void>;
+  takeDisabledOnce(): Promise<string[]>;
   getPermissionStatus(): Promise<PermissionStatus>;
   requestNotificationPermission(): Promise<PermissionResponse>;
   openNotificationSettings(): Promise<void>;
@@ -59,14 +59,14 @@ export class AlarmEngineService {
     return this.native !== null;
   }
 
-  /** Recalcula y programa una alarma (tras guardar, activar/desactivar o borrar). */
-  async reschedule(alarmId: string): Promise<void> {
-    await this.native?.reschedule(alarmId);
+  /** Entrega el snapshot completo (ver engine-snapshot.ts); el motor reprograma todo. */
+  async sync(snapshotJson: string): Promise<void> {
+    await this.native?.sync(snapshotJson);
   }
 
-  /** Recalcula todas las alarmas desde SQLite. */
-  async rescheduleAll(): Promise<void> {
-    await this.native?.rescheduleAll();
+  /** Ids de alarmas "una vez" que el motor desactivó (sonaron o vencieron); se consumen. */
+  async takeDisabledOnce(): Promise<string[]> {
+    return (await this.native?.takeDisabledOnce()) ?? [];
   }
 
   /** `null` si no hay módulo nativo. */

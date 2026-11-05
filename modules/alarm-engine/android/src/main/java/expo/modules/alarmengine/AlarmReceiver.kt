@@ -14,7 +14,7 @@ class AlarmReceiver : BroadcastReceiver() {
       SnoozeStore.remove(context, id)
     } else {
       // Un disparo de una alarma borrada o desactivada es obsoleto: se ignora.
-      val alarm = AlarmDb.get(context, id)
+      val alarm = AlarmSnapshot.get(context, id)
       if (alarm == null || !alarm.enabled) return
     }
 
@@ -23,9 +23,9 @@ class AlarmReceiver : BroadcastReceiver() {
     if (isSnooze) return
 
     // Programar la siguiente ocurrencia / desactivar "once". Nunca antes de haber hecho sonar.
-    val alarm = AlarmDb.get(context, id) ?: return
+    val alarm = AlarmSnapshot.get(context, id) ?: return
     if (alarm.schedule.type == "once") {
-      AlarmDb.disableOnce(context, id)
+      AlarmSnapshot.disableOnce(context, id)
       AlarmEvents.onAlarmsChanged?.invoke()
     } else {
       AlarmScheduler.scheduleBase(context, alarm)
