@@ -25,4 +25,17 @@
 | 21 | Nombre del autor | Se escribió "Facundo Morán" (el pedido decía "Moràn"); confirmar ortografía en `core/config/app-info.ts`. |
 | 22 | Confirmar al descartar cambios | RESUELTO: el editor pregunta "¿Descartar cambios?" al volver con cambios sin guardar. El botón atrás físico de Android aún no se intercepta. |
 | 23 | Editar una alarma desactivada | Al guardar, la alarma queda activa. Confirmar si es lo deseado. |
-| 24 | Categoría medicación/rutina | Tokens libres (JSON en `alarm.tags`), se programa como `weekly`. Sin dosis estructurada ni registro de tomas. Pendiente: mostrar tokens en la pantalla de alarma sonando (requiere contrato nativo). |
+| 24 | Categoría medicación/rutina | Tokens libres (JSON en `alarm.tags`), se programa como `weekly`. Los tokens se muestran en la pantalla y notificación de alarma sonando. Sin dosis estructurada ni registro de tomas. |
+| 25 | Contraste de componentes (WCAG 1.4.11) | RESUELTO: `--border` a 3.2:1 (claro) y 3.5:1 (oscuro) sobre `--bg`; los campos de texto tienen borde. |
+| 26 | Icono | RESUELTO: reloj despertador antiguo con campanas, blanco sobre degradado del logo de Angular (`scripts/generate-icons.py`). El color vive solo en el icono; la UI sigue monocromática. |
+| 27 | Texto del toast | "Alarma Guardada" (mayúscula en Guardada, tal como se pidió) vs "Alarma actualizada": inconsistente; recomendado unificar en minúscula. |
+
+## Permisos declarados (módulo `alarm-engine`)
+| Permiso | Justificación |
+|---|---|
+| `USE_EXACT_ALARM` | Función principal: alarmas a la hora exacta. |
+| `POST_NOTIFICATIONS` | Notificación de alarma sonando (Android 13+). |
+| `USE_FULL_SCREEN_INTENT` | Mostrar la alarma sobre el bloqueo. |
+| `RECEIVE_BOOT_COMPLETED` | Re-armar alarmas tras reiniciar. |
+| `FOREGROUND_SERVICE` + `..._SYSTEM_EXEMPTED` | Mantener audio/vibración mientras suena. |
+| `VIBRATE` | Vibración de la alarma. |
