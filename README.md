@@ -7,7 +7,7 @@ Alarmas simples, locales y sin cuentas para Android.
 
 ## Quiénes lo hacen
 
-Hola, soy **Facundo Morán**, desarrollador. AlarMap es mi app de alarmas: sin cuentas, sin publicidad,
+Hola, mi nombre es **Facundo Morán**, desarrollador web. AlarMap es mi app de alarmas: sin cuentas, sin publicidad,
 sin telemetría y con todos los datos guardados solo en tu teléfono.
 
 La desarrollo junto a **Claude** (de [Anthropic](https://www.anthropic.com)), mi coautor: un asistente de IA
