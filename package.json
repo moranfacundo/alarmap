@@ -10,7 +10,7 @@
     "@ng-native/components": "0.22.0",
     "@ng-native/device": "0.22.0",
     "@ng-native/expo": "^0.22.0",
-    "@ng-native/fabric": "0.22.0",
+    "@ng-native/fabric": "0.22.2",
     "@ng-native/metro": "0.22.0",
     "@ng-native/platform": "0.22.0",
     "@ng-native/router": "^0.22.0",
