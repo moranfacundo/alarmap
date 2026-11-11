@@ -5,7 +5,7 @@
   "main": "src/main.ts",
   "dependencies": {
     "@angular/common": "^22.0.0",
-    "@angular/core": "^22.0.0",
+    "@angular/core": "^22.2.5",
     "@angular/router": "^22.2.4",
     "@ng-native/components": "0.22.0",
     "@ng-native/device": "0.22.0",
